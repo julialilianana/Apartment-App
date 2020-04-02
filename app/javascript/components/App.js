@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom'
 
 import NewAccount from './pages/NewAccount'
 import ApartmentIndex from './pages/ApartmentIndex'
+import NewApartment from './pages/NewApartment'
 
 
 class App extends React.Component {
@@ -30,6 +31,20 @@ class App extends React.Component {
         this.setState({ apartments: apartmentsArray })
       })
     }
+    createApartment = (newapartment) => {
+    return fetch("https://9eaf8b4411cb48d59cd49190940b72b1.vfs.cloud9.us-west-2.amazonaws.com/apartments", {
+    	body: JSON.stringify(newapartment),
+    	headers: {
+    		"Content-Type": "application/json"
+    	},
+    	method: "POST"
+    })
+    .then((response) => {
+      if(response.ok){
+        return this.getApartments()
+      }
+    })
+  }
   
   render () {
     const {
@@ -57,12 +72,17 @@ class App extends React.Component {
             <li>
               <Link to="/">Home</Link>
             </li>
+            <li>
+              <Link to="/newapartment">Create a Listing</Link>
+            </li>
              <li>
               <Link to="/account">Create an Account</Link>
             </li>
           </ul>
         </nav>
          <Switch>
+         <Route exact path="/newapartment"
+            render={ (props) => <NewApartment handleSubmit={ this.createApartment } /> }/>
          <Route path="/account/" exact component={ NewAccount } />
          <Route exact path="/" render={ (props) => <ApartmentIndex apartments={ this.state.apartments } /> }
             />
