@@ -1,11 +1,36 @@
 import React from "react"
 import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom'
 
-import HomePage from './pages/HomePage'
 import NewAccount from './pages/NewAccount'
+import ApartmentIndex from './pages/ApartmentIndex'
 
 
 class App extends React.Component {
+   constructor(props){
+    super(props)
+    this.state = {
+      apartments: [],
+    }
+    
+    this.getApartments()
+   }
+   
+     componentDidMount(){
+    	this.getApartments()
+    }
+
+    getApartments = () => {
+      fetch("https://9eaf8b4411cb48d59cd49190940b72b1.vfs.cloud9.us-west-2.amazonaws.com/apartments")
+      .then((response)=>{
+        if(response.status === 200){
+          return(response.json())  
+        }
+      })
+      .then((apartmentsArray)=>{
+        this.setState({ apartments: apartmentsArray })
+      })
+    }
+  
   render () {
     const {
       logged_in,
@@ -39,7 +64,8 @@ class App extends React.Component {
         </nav>
          <Switch>
          <Route path="/account/" exact component={ NewAccount } />
-         <Route path="/" exact component={ HomePage } />
+         <Route exact path="/" render={ (props) => <ApartmentIndex apartments={ this.state.apartments } /> }
+            />
         </Switch>
         </div>
         </Router>
